@@ -84,6 +84,14 @@ export default class Table extends React.PureComponent {
     /** Optional id */
     id: PropTypes.string,
 
+    /** Ref to internal `div` element */
+    innerRef: PropTypes.oneOfType([
+      // Either a function
+      PropTypes.func,
+      // Or the instance of a DOM native element (see the note about SSR)
+      PropTypes.shape({current: PropTypes.instanceOf(Element)}),
+    ]),
+
     /** Optional renderer to be used in place of table body rows when rowCount is 0 */
     noRowsRenderer: PropTypes.func,
 
@@ -403,6 +411,7 @@ export default class Table extends React.PureComponent {
     // Any property that should trigger a re-render of Grid then is specified here to avoid a stale display.
     return (
       <div
+        ref={this.props.innerRef}
         aria-label={this.props['aria-label']}
         aria-labelledby={this.props['aria-labelledby']}
         aria-colcount={React.Children.toArray(children).length}
