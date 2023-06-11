@@ -89,9 +89,8 @@ export default class Table extends React.PureComponent {
       // Either a function
       PropTypes.func,
       // Or the instance of a DOM native element (see the note about SSR)
-      PropTypes.shape({current: PropTypes.instanceOf(Element)}),
+      PropTypes.shape({current: PropTypes.instanceOf(PropTypes.elementType)}),
     ]),
-
     /** Optional renderer to be used in place of table body rows when rowCount is 0 */
     noRowsRenderer: PropTypes.func,
 
