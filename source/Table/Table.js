@@ -84,13 +84,6 @@ export default class Table extends React.PureComponent {
     /** Optional id */
     id: PropTypes.string,
 
-    /** Ref to internal `div` element */
-    innerRef: PropTypes.oneOfType([
-      // Either a function
-      PropTypes.func,
-      // Or the instance of a DOM native element (see the note about SSR)
-      PropTypes.shape({current: PropTypes.instanceOf(PropTypes.elementType)}),
-    ]),
     /** Optional renderer to be used in place of table body rows when rowCount is 0 */
     noRowsRenderer: PropTypes.func,
 
@@ -269,6 +262,7 @@ export default class Table extends React.PureComponent {
     this._onScroll = this._onScroll.bind(this);
     this._onSectionRendered = this._onSectionRendered.bind(this);
     this._setRef = this._setRef.bind(this);
+    this._setGridElementRef = this._setGridElementRef.bind(this);
   }
 
   forceUpdateGrid() {
@@ -344,8 +338,8 @@ export default class Table extends React.PureComponent {
   }
 
   getScrollbarWidth() {
-    if (this.Grid) {
-      const Grid = this.Grid._scrollingContainer;
+    if (this.GridElement) {
+      const Grid = this.GridElement;
       const clientWidth = Grid.clientWidth || 0;
       const offsetWidth = Grid.offsetWidth || 0;
       return offsetWidth - clientWidth;
@@ -396,7 +390,7 @@ export default class Table extends React.PureComponent {
     React.Children.toArray(children).forEach((column, index) => {
       const flexStyles = this._getFlexStyleForColumn(
         column,
-        column.props.style,
+        column.props.style || Column.defaultProps.style,
       );
 
       this._cachedColumnStyles[index] = {
@@ -410,7 +404,6 @@ export default class Table extends React.PureComponent {
     // Any property that should trigger a re-render of Grid then is specified here to avoid a stale display.
     return (
       <div
-        ref={this.props.innerRef}
         aria-label={this.props['aria-label']}
         aria-labelledby={this.props['aria-labelledby']}
         aria-colcount={React.Children.toArray(children).length}
@@ -434,6 +427,7 @@ export default class Table extends React.PureComponent {
 
         <Grid
           {...this.props}
+          elementRef={this._setGridElementRef}
           aria-readonly={null}
           autoContainerWidth
           className={clsx('ReactVirtualized__Table__Grid', gridClassName)}
@@ -739,6 +733,10 @@ export default class Table extends React.PureComponent {
 
   _setRef(ref) {
     this.Grid = ref;
+  }
+
+  _setGridElementRef(ref) {
+    this.GridElement = ref;
   }
 
   _setScrollbarWidth() {
